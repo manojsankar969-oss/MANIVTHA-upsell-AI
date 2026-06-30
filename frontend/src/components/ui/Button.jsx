@@ -15,10 +15,11 @@ export const Button = ({
   const baseStyle = "flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 hover:shadow-lg hover:shadow-indigo-200 focus:ring-indigo-500",
-    secondary: "bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 focus:ring-slate-500",
+    primary: "bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-600 hover:to-violet-700 text-white shadow-xl shadow-cyan-200/30 focus:ring-cyan-400",
+    secondary: "bg-white/85 border border-slate-200 hover:border-cyan-300 text-slate-700 hover:bg-cyan-50 focus:ring-cyan-400",
+    premium: "bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-200/30 focus:ring-teal-400",
     dark: "bg-slate-900 hover:bg-slate-800 text-white shadow-md focus:ring-slate-700",
-    ghost: "text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg p-2"
+    ghost: "text-slate-500 hover:text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-950/20 rounded-lg p-2"
   };
 
   const finalClassName = `${variant === 'ghost' ? '' : baseStyle} ${variants[variant] || variants.primary} ${className}`;

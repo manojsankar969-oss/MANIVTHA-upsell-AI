@@ -8,7 +8,7 @@ export const Spinner = ({ size = 'md', color = 'indigo', className = '' }) => {
   };
 
   const colors = {
-    indigo: 'border-indigo-600/30 border-t-indigo-600',
+    indigo: 'border-cyan-600/30 border-t-indigo-600',
     white: 'border-white/30 border-t-white',
     slate: 'border-slate-300 border-t-slate-600',
   };

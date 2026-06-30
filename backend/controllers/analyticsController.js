@@ -6,6 +6,7 @@ const dbService = require('../services/dbService');
 const getAnalytics = async (req, res, next) => {
   try {
     const analyticsData = await dbService.getAnalytics();
+
     return res.json(analyticsData);
   } catch (err) {
     next(err);

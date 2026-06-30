@@ -30,7 +30,7 @@ export const Textarea = ({
         placeholder={placeholder}
         required={required}
         rows={rows}
-        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all duration-200 placeholder-slate-400 bg-white resize-none"
+        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all duration-200 placeholder-slate-400 bg-white resize-none"
         {...props}
       />
     </div>

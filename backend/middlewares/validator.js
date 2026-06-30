@@ -2,18 +2,37 @@
  * Middleware to validate script generation input data.
  */
 const validateGenerateInput = (req, res, next) => {
-  const { staff_name, customer_details, booking_inputs } = req.body;
+  const { 
+    staff_name, 
+    customer_name, 
+    destination,
+    current_package,
+    current_vehicle,
+    current_price
+  } = req.body;
 
   if (!staff_name || typeof staff_name !== 'string' || !staff_name.trim()) {
-    return res.status(400).json({ error: 'staff_name is required and must be a non-empty string' });
+    return res.status(400).json({ error: 'Staff name is required.' });
   }
 
-  if (!customer_details || typeof customer_details !== 'string' || !customer_details.trim()) {
-    return res.status(400).json({ error: 'customer_details is required and must be a non-empty string' });
+  if (!customer_name || typeof customer_name !== 'string' || !customer_name.trim()) {
+    return res.status(400).json({ error: 'Customer name is required.' });
   }
 
-  if (!booking_inputs || typeof booking_inputs !== 'string' || !booking_inputs.trim()) {
-    return res.status(400).json({ error: 'booking_inputs is required and must be a non-empty string' });
+  if (!destination || typeof destination !== 'string' || !destination.trim()) {
+    return res.status(400).json({ error: 'Destination is required.' });
+  }
+
+  if (!current_package || typeof current_package !== 'string' || !current_package.trim()) {
+    return res.status(400).json({ error: 'Current package description is required.' });
+  }
+
+  if (!current_vehicle || typeof current_vehicle !== 'string' || !current_vehicle.trim()) {
+    return res.status(400).json({ error: 'Current vehicle is required.' });
+  }
+
+  if (!current_price || typeof current_price !== 'string' || !current_price.trim()) {
+    return res.status(400).json({ error: 'Current price is required.' });
   }
 
   next();

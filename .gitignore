@@ -3,11 +3,13 @@ node_modules/
 
 # Environment files
 .env
-.env.example
 .env.local
 .env.*.local
 backend/.env
 backend/.env.local
+
+# Track frontend example env but ignore others
+!frontend/.env.example
 
 # Build outputs
 dist/
@@ -20,6 +22,7 @@ npm-debug.log*
 
 # OS/Editor
 .DS_Store
+desktop.ini
 .vscode/
 .idea/
 *.swp

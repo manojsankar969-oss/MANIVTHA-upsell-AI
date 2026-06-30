@@ -7,15 +7,30 @@ require('dotenv').config();
 const { initDb } = require('./config/db');
 const apiRouter = require('./routes/api');
 const errorHandler = require('./middlewares/errorHandler');
+const { generalLimiter } = require('./middlewares/rateLimiter');
 
 const app = express();
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5002;
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:5173'];
 
 // 1. CORS Middleware (Must run before routes)
 app.use(cors({
-  origin: '*',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (curl, mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    // Allow explicitly listed origins (env var)
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any Vercel preview deployment
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    // Allow any Render internal origin
+    if (origin.endsWith('.onrender.com')) return callback(null, true);
+    callback(null, false);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
 }));
 
 // 2. Security and Logging Middlewares
@@ -25,12 +40,15 @@ app.use(helmet({
 app.use(morgan('dev'));
 app.use(express.json());
 
-// 3. Health Check
+// 3. Global rate limiter
+app.use(generalLimiter);
+
+// 4. Health Check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-// 4. API Routes
+// 5. API Routes
 app.use('/api', apiRouter);
 
 // 5. Global Error Handling Middleware (Must be registered last)
@@ -41,24 +59,23 @@ const bootstrap = async () => {
   try {
     // Run database table checks
     await initDb();
-
-    // Start Server
-    const server = app.listen(port, () => {
-      console.log(`✅ Upgradeable backend is ACTIVE and listening on port ${port}`);
-    });
-
-    server.on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${port} is already in use. Retrying with a different port or kill the blocking process.`);
-      } else {
-        console.error('❌ Server bootstrap error:', err);
-      }
-    });
-
   } catch (err) {
-    console.error('❌ Failed to bootstrap the backend server:', err);
-    process.exit(1);
+    console.warn('⚠️ Warning: Database connection failed. Please check your DATABASE_URL in .env.');
+    console.warn(`Details: ${err.message}`);
   }
+
+  // Start Server
+  const server = app.listen(port, () => {
+    console.log(`✅ Upgradeable backend is ACTIVE and listening on port ${port}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${port} is already in use. Retrying with a different port or kill the blocking process.`);
+    } else {
+      console.error('❌ Server bootstrap error:', err);
+    }
+  });
 };
 
 bootstrap();

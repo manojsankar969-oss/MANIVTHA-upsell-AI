@@ -5,8 +5,25 @@ const dbService = require('../services/dbService');
  */
 const getHistory = async (req, res, next) => {
   try {
-    const historyList = await dbService.getHistory();
-    return res.json(historyList);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const search = req.query.search || '';
+    
+    const filters = {
+      dateRange: req.query.dateRange || null,
+      rating: req.query.rating ? parseInt(req.query.rating, 10) : null,
+      vehicleType: req.query.vehicleType || null
+    };
+
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    const [data, total] = await Promise.all([
+      dbService.getHistory(page, limit, userId, role, search, filters),
+      dbService.getHistoryCount(userId, role, search, filters)
+    ]);
+
+    return res.json({ data, total, page, limit });
   } catch (err) {
     next(err);
   }
@@ -17,6 +34,8 @@ const getHistory = async (req, res, next) => {
  */
 const getGenerationById = async (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
+  const role = req.user.role;
 
   try {
     const targetId = parseInt(id, 10);
@@ -24,10 +43,10 @@ const getGenerationById = async (req, res, next) => {
       return res.status(400).json({ error: 'Invalid ID format' });
     }
 
-    const generation = await dbService.getGenerationById(targetId);
+    const generation = await dbService.getGenerationById(targetId, userId, role);
     
     if (!generation) {
-      return res.status(404).json({ error: 'Generation not found' });
+      return res.status(404).json({ error: 'Generation not found or access denied' });
     }
 
     return res.json(generation);
